@@ -1,4 +1,4 @@
-# microsoft_2025_platform/core/urls.py
+# nike.org/core/urls.py
 
 from django.urls import path
 from . import views

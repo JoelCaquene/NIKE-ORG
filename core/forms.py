@@ -1,4 +1,4 @@
-# microsoft_2025_platform/core/forms.py
+# nike.org/core/forms.py
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
