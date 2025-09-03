@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # nike_org/core/views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -46,20 +45,25 @@ def register_view(request):
     Cria um novo usuário, gera um código de convite e atribui um bónus ao
     referenciador, se um código válido for fornecido.
     """
+    # Verifica se há um código de convite na URL (GET)
+    initial_data = {}
+    invited_by_code = request.GET.get('invited_by_code')
+    if invited_by_code:
+        initial_data['invited_by_code'] = invited_by_code
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
                 user = form.save()
                 
-                invited_by_code = form.cleaned_data.get('invited_by_code')
-                if invited_by_code:
+                # A lógica de atribuição do bônus é mantida
+                invited_by_code_form = form.cleaned_data.get('invited_by_code')
+                if invited_by_code_form:
                     try:
-                        # Procura pelo utilizador que convidou
-                        referrer = CustomUser.objects.get(my_invitation_code=invited_by_code)
+                        referrer = CustomUser.objects.get(my_invitation_code=invited_by_code_form)
                         bonus_amount = Decimal('100.00')
                         referrer.bonus_balance += bonus_amount
-                        # CORREÇÃO APLICADA AQUI: Adicionar o bônus também ao referral_income para rastreamento total
                         referrer.referral_income += bonus_amount 
                         referrer.save()
                         messages.success(request, f"Parabéns! Você recebeu um bónus de Kz {bonus_amount} por convidar {user.username}.")
@@ -69,7 +73,6 @@ def register_view(request):
             messages.success(request, 'Registo realizado com sucesso! Faça login para continuar.')
             return redirect('login')
         else:
-            # Exibe erros de validação do formulário
             for field, errors in form.errors.items():
                 for error in errors:
                     if field == '__all__':
@@ -77,14 +80,12 @@ def register_view(request):
                     else:
                         messages.error(request, f"Erro no campo '{form.fields[field].label}': {error}")
     else:
-        initial_data = {}
-        # Obtém o código de convite da URL, se existir
-        invited_by_code = request.GET.get('invited_by_code')
-        if invited_by_code:
-            initial_data['invited_by_code'] = invited_by_code
+        # Se for um GET, cria o formulário com os dados iniciais, se existirem
         form = CustomUserCreationForm(initial=initial_data)
     
     return render(request, 'core/register.html', {'form': form})
+
+# (Resto do código de views.py permanece inalterado)
 
 def login_view(request):
     """
