@@ -138,7 +138,7 @@
             {% endif %}
         </div>
 
-        {# Renderiza o campo 'Senha' - Agora um único campo #}
+        {# Renderiza o campo 'Senha' #}
         <div class="form-group">
             <label for="{{ form.password.id_for_label }}">Senha:</label>
             {{ form.password }}
@@ -151,12 +151,27 @@
             {% endif %}
         </div>
 
-        {# O campo 'Confirmação da Senha' FOI REMOVIDO AQUI INTENCIONALMENTE! #}
+        {# CAMPO DE CONFIRMAÇÃO DE SENHA ADICIONADO NOVAMENTE #}
+        <div class="form-group">
+            <label for="{{ form.password2.id_for_label }}">Confirmar Senha:</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <ul class="errorlist">
+                    {% for error in form.password2.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
 
         {# Renderiza o campo 'Código de Convite (Opcional)' #}
         <div class="form-group">
             <label for="{{ form.invited_by_code.id_for_label }}">Código de Convite (Opcional):</label>
-            {{ form.invited_by_code }}
+            {# O CAMPO AGORA É PREENCHIDO AUTOMATICAMENTE COM O VALOR DO FORMULÁRIO #}
+            <input type="text" name="{{ form.invited_by_code.name }}" id="{{ form.invited_by_code.id_for_label }}"
+                value="{{ form.invited_by_code.value|default:'' }}"
+                {% if form.invited_by_code.value %}readonly{% endif %}>
+            
             {% if form.invited_by_code.errors %}
                 <ul class="errorlist">
                     {% for error in form.invited_by_code.errors %}
